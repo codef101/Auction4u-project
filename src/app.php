@@ -58,7 +58,7 @@ $errorSetting = $app->getContainer()->get('settings')['displayErrorDetails'];
 
 $app->addErrorMiddleware($errorSetting, true, true);
 
-$app->add(new TrailingSlash(true));
+$app->add(new TrailingSlash(false));
 
 
 $app->run();
