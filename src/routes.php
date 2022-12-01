@@ -15,12 +15,13 @@ return function (App $app) {
     });
 
     // App routes
-    $app->get('/','App\Controllers\HomeController:index')->setName('root');
+    $app->get('/','App\Controllers\HomeController:index')->setName('home');
     $app->get('/cart','App\Controllers\HomeController:index')->setName('cart');
     $app->get('/checkout','App\Controllers\HomeController:index')->setName('checkout');
     $app->get('/contact','App\Controllers\HomeController:index')->setName('contact');
     $app->get('/history','App\Controllers\HomeController:index')->setName('bid_history');
     $app->get('/login','App\Controllers\HomeController:index')->setName('login');
+    $app->get('/register','App\Controllers\HomeController:index')->setName('login');
     $app->post('/login','App\Controllers\HomeController:index');
 
     // Cors Routes

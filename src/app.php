@@ -36,6 +36,7 @@ $container->set('view', function() {
         ['cache' => __DIR__ . '/../cache']);
 });
 
+
 // Instantiate app
 $app = AppFactory::create();
 
@@ -44,7 +45,7 @@ $app->setBasePath('/Auction4u');
 
 
 // Add Twig-View Middleware
-$app->add(TwigMiddleware::createFromContainer($app));
+$app->add(TwigMiddleware::createFromContainer($app, Twig::class));
 
 // Add Routing Middleware (needed to use RouteContext previously in middleware, for example)
 $app->addRoutingMiddleware();
@@ -57,6 +58,7 @@ $errorSetting = $app->getContainer()->get('settings')['displayErrorDetails'];
 
 $app->addErrorMiddleware($errorSetting, true, true);
 
-$app->add(new TrailingSlash(true)); // true adds the trailing slash (false removes it)
+$app->add(new TrailingSlash(true));
+
 
 $app->run();
