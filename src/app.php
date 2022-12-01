@@ -4,11 +4,8 @@ declare(strict_types=1);
 use Slim\Views\Twig;
 use DI\ContainerBuilder;
 use Slim\Factory\AppFactory;
-use Slim\Routing\RouteContext;
 use Slim\Views\TwigMiddleware;
-use Psr\Http\Message\ResponseInterface;
-use Slim\Exception\HttpNotFoundException;
-
+use Middlewares\TrailingSlash;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -23,6 +20,8 @@ $settings($containerBuilder);
 $dependencies = require __DIR__ . '/dependencies.php';
 $dependencies($containerBuilder);
 
+// Set up Middlewares
+require __DIR__ . '/middlewares.php';
 
 // Create a Container using PHP-DI to manage containers (containers are like little snipets or functions returning something ready to all the app life)
 $container = $containerBuilder->build();
@@ -42,47 +41,22 @@ $app = AppFactory::create();
 
 $app->setBasePath('/Auction4u');
 
-// Setup a supersimple auth checker, intercepting http calls with this middleware and checking that only allowed routes can be navigated without auth
-$loggedInMiddleware = function($request, $handler): ResponseInterface {
-    $routeContext = RouteContext::fromRequest($request);
-    $route = $routeContext->getRoute();
 
-    if (empty($route)) { throw new HttpNotFoundException($request, $response); }
 
-    $routeName = $route->getName();
-
-    // Define routes that user does not have to be logged in with. All other routes, the user needs to be logged in with.
-    // Names for routes must be defined in routes.php with ->setName() for each one.
-    $publicRoutesArray = array('root', 'apiLogin');
-
-    //var_dump("User ID: ".(empty($_SESSION['user']) ? ' none' : $_SESSION['user']));
-    if (empty($_SESSION['user']) && (!in_array($routeName, $publicRoutesArray))) {
-        // Create a redirect for a named route
-        $routeParser = $routeContext->getRouteParser();
-        $url = $routeParser->urlFor('root');
-
-        $response = new \Slim\Psr7\Response();
-
-        return $response->withHeader('Location', $url)->withStatus(302);
-    } else {
-        $response = $handler->handle($request);
-
-        return $response;
-    }
-};
-
-$app->add($loggedInMiddleware);
+// Add Twig-View Middleware
+$app->add(TwigMiddleware::createFromContainer($app));
 
 // Add Routing Middleware (needed to use RouteContext previously in middleware, for example)
 $app->addRoutingMiddleware();
-// Add Twig-View Middleware
-$app->add(TwigMiddleware::createFromContainer($app));
 
 // Register routes
 $routes = require __DIR__ . '/routes.php';
 $routes($app);
 
 $errorSetting = $app->getContainer()->get('settings')['displayErrorDetails'];
+
 $app->addErrorMiddleware($errorSetting, true, true);
+
+$app->add(new TrailingSlash(true)); // true adds the trailing slash (false removes it)
 
 $app->run();

@@ -11,15 +11,17 @@ class HomeController {
     protected $app;
     protected $flash;
 
-    public function __construct(PDO $db)
+    public function __construct(Twig $view, PDO $db)
     {
+       $this->view = $view;
        $this->db = $db;
     }
 
     public function index($request, $response, $args)
     {
-        $view = Twig::fromRequest($request);
-        return $view->render($response, 'profile.html');
+        return $this->view->render($response, 'homepage.twig', [
+            'page' =>'homepage.php'
+        ]);
     }
 
 }

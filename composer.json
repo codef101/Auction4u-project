@@ -4,7 +4,8 @@
         "slim/psr7": "^1.5",
         "php-di/php-di": "^6.2",
         "monolog/monolog": "^2.1",
-        "slim/twig-view": "^3.3"
+        "slim/twig-view": "^3.3",
+        "middlewares/trailing-slash": "^2.0"
     },
     "autoload": {
         "psr-4": {

@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use PDO;
 use Monolog\Logger;
 use Slim\Views\Twig;
 use DI\ContainerBuilder;
